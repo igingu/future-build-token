@@ -23,7 +23,7 @@ Personal project to learn Solidity.
     - 25% second year
     - 25% third year
     - 40% fourth year
-- Users should be able to buy tokens using ETH. There should be a fixed price for this sale. Need to get ETH/USD conversion
+- Users should be able to buy tokens using ETH or stablecoins like USDC. There should be a fixed price for this sale. Need to get ETH/USD conversion
 
 # Features to think about:
 ---
@@ -45,3 +45,12 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
+
+## Setup 
+* ```npm install```
+* if using VsCode for development, add the following to ```settings.json```:
+    * ```
+        "solidity.remappings": [
+            "@openzeppelin/=~node_modules/@openzeppelin/"
+        ]
+        ```
