@@ -1,0 +1,23 @@
+{
+  "name": "future-build-token",
+  "version": "1.0.0",
+  "description": "Personal project to learn Solidity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/palmtreey/future-build-token.git"
+  },
+  "author": "Ionut-Viorel Gingu",
+  "license": "NO LICENSE",
+  "bugs": {
+    "url": "https://github.com/palmtreey/future-build-token/issues"
+  },
+  "homepage": "https://github.com/palmtreey/future-build-token#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.12.2"
+  }
+}
