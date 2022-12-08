@@ -1,5 +1,4 @@
 import { ethers } from "hardhat";
-import { MinEthersFactory } from "../../typechain-types/common";
 
 const Decimals: ethers.BigNumber = ethers.BigNumber.from(21);
 const TotalSupplyInTokens: ethers.BigNumber = ethers.BigNumber.from(10 ** 8);

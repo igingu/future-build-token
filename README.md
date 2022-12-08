@@ -6,11 +6,11 @@ Personal project to learn Solidity.
 ---
 ### ERC20 Token:
 - FutureBuild Token (FTRTKN)
-- 18 decimals
+- 21 decimals
 - Initial supply of 100 million:
     - 10% reserved for owners
     - 15% reserved for developers
-    - 25 to pre-launch investors
+    - 25% to pre-launch investors
     - 25% for sale on the open market
     - 5% for air-drop
     - remaining 25% locked and accessible only for investing in community projects
@@ -28,6 +28,11 @@ Personal project to learn Solidity.
 # Features to think about:
 ---
 ### Staking
+- Staking contracts have an owner, a token to be staked and a token to be rewarded in.
+- Start and end at a particular time
+- Can be frozen by owner
+- Discrete staking contract
+- Dynamic staking contract
 ### DAO
 ### Using users' staked FutureBuildToken to provide liquidy in LP
 ### Flash loans
