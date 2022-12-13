@@ -14,7 +14,11 @@ const config: HardhatUserConfig = {
       url: process.env.GOERLI_RPC_ENDPOINT,
       accounts: [process.env.GOERLI_PK1!],
     }
-  }
+  },
+  typechain: {
+    outDir: "misc/typechain-types/",
+    target: "ethers-v5",
+  },
 };
 
 export default config;
