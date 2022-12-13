@@ -15,5 +15,10 @@ export const Constants = {
         TotalSupplyInTokens,
         TotalSupplyInUnits,
         Decimals,
+    },
+    Staking: {
+        DynamicStaking: {
+
+        }
     }
 }

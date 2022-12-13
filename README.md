@@ -27,12 +27,12 @@ Personal project to learn Solidity.
 
 # Features to think about:
 ---
-### Staking
+### Dynamic Staking
 - Staking contracts have an owner, a token to be staked and a token to be rewarded in.
-- Start and end at a particular time
-- Can be frozen by owner
-- Discrete staking contract
-- Dynamic staking contract
+- Can stake, unstake and claim rewards.
+- Start and end at a particular time.
+- Can be frozen by owner.
+
 ### DAO
 ### Using users' staked FutureBuildToken to provide liquidy in LP
 ### Flash loans
@@ -54,8 +54,12 @@ npx hardhat run scripts/deploy.ts
 ## Setup 
 * ```npm install```
 * if using VsCode for development, add the following to ```settings.json```:
-    * ```
-        "solidity.remappings": [
-            "@openzeppelin/=~node_modules/@openzeppelin/"
-        ]
-        ```
+```
+    "solidity.remappings": [
+        "@openzeppelin/=~node_modules/@openzeppelin/"
+    ]
+```
+
+## Useful
+* ```npx hardhat run scripts/deploy.ts``` to run deploy script
+* ```npx hardhat verify --network goerli 0x690aD8fABE17f1EeFF88E2Ef900f7b88e6eC0aF0``` to verify contracts on etherscan

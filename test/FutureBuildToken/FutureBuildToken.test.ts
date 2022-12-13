@@ -14,6 +14,7 @@ describe("FutureBuildToken", () => {
     before(async () => {
         futureBuildTokenContractFactory = await ethers.getContractFactory(Constants.ContractNames.FutureBuildToken);
         futureBuildTokenContract = await futureBuildTokenContractFactory.deploy();
+        await futureBuildTokenContract.deployed();
     });
 
     it("Should deploy with the correct parameters", async () => {

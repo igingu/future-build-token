@@ -1,23 +1,21 @@
-// import { ethers } from "hardhat";
+import { ethers } from "hardhat";
+import { Constants } from "./common/constants";
 
-// async function main() {
-//   const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-//   const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-//   const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+import * as hre from "hardhat";
 
-//   const lockedAmount = ethers.utils.parseEther("1");
+async function main() {
+  const futureBuildTokenContractFactory: ethers.ContractFactory = await ethers.getContractFactory(Constants.ContractNames.FutureBuildToken);
+  const futureBuildTokenContract: ethers.Contract = await futureBuildTokenContractFactory.deploy();
+  await futureBuildTokenContract.deployed();
 
-//   const Lock = await ethers.getContractFactory("Lock");
-//   const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  console.log(`Deployed FutureBuildToken contract at ${futureBuildTokenContract.address} address.`);
 
-//   await lock.deployed();
+  // await hre.run("verify:verify", { address: futureBuildTokenContract.address });
+}
 
-//   console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
-// }
-
-// // We recommend this pattern to be able to use async/await everywhere
-// // and properly handle errors.
-// main().catch((error) => {
-//   console.error(error);
-//   process.exitCode = 1;
-// });
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
