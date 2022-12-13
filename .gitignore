@@ -3,9 +3,13 @@ node_modules
 coverage
 coverage.json
 
+# Hardhat files
+cache
+artifacts
+
+# Typescript types for Smart Contracts
 misc/typechain
 misc/typechain-types
 
-#Hardhat files
-cache
-artifacts
+# Smart Contracts' ABIs
+misc/abi

@@ -1,6 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
+import "hardhat-abi-exporter";
+
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -14,6 +16,11 @@ const config: HardhatUserConfig = {
       url: process.env.GOERLI_RPC_ENDPOINT,
       accounts: [process.env.GOERLI_PK1!],
     }
+  },
+  abiExporter: {
+    path: "misc/abi",
+    runOnCompile: true,
+    pretty: true
   },
   typechain: {
     outDir: "misc/typechain-types/",
