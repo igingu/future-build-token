@@ -24,7 +24,9 @@ contract DynamicStaking is IStaking, Ownable {
     mapping(address => uint256) public rewardToClaim;
     mapping(address => uint256) public rewardsPerTokenPaid;
 
-    string private constant START_TIME_IN_THE_PAST = "1";
+    string
+        private constant CLAIM_AMOUNT_CAN_NOT_BE_MORE_THAN_AVAILABLE_REWARDS =
+        "1";
     string private constant START_TIME_NOT_SMALLER_OR_EQUAL_TO_END_TIME = "2";
     string private constant STAKING_NOT_STARTED_YET = "3";
     string private constant STAKING_ENDED = "4";
@@ -33,9 +35,6 @@ contract DynamicStaking is IStaking, Ownable {
     string private constant REWARD_RATE_IS_ZERO = "7";
     string private constant AMOUNT_CAN_NOT_BE_ZERO = "8";
     string private constant TOKEN_TRANSFER_FROM_FAILED = "9";
-    string
-        private constant CLAIM_AMOUNT_CAN_NOT_BE_MORE_THAN_AVAILABLE_REWARDS =
-        "10";
 
     event Unstaked(address indexed user, uint256 amount);
     event Staked(address indexed user, uint256 amount);
@@ -70,7 +69,6 @@ contract DynamicStaking is IStaking, Ownable {
         address stakingToken_,
         address rewardsToken_
     ) {
-        require(startTime_ > block.timestamp, START_TIME_IN_THE_PAST);
         require(
             endTime_ > startTime_,
             START_TIME_NOT_SMALLER_OR_EQUAL_TO_END_TIME
