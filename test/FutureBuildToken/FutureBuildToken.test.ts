@@ -12,18 +12,29 @@ describe("FutureBuildToken", () => {
 	let futureBuildToken: FutureBuildToken;
 
 	before(async () => {
-		futureBuildTokenFactory = await ethers.getContractFactory(Constants.ContractNames.FutureBuildToken) as FutureBuildToken__factory;
-		futureBuildToken = await futureBuildTokenFactory.deploy() as FutureBuildToken;
+		futureBuildTokenFactory = (await ethers.getContractFactory(
+			Constants.ContractNames.FutureBuildToken
+		)) as FutureBuildToken__factory;
+		futureBuildToken =
+			(await futureBuildTokenFactory.deploy()) as FutureBuildToken;
 		await futureBuildToken.deployed();
 	});
 
 	it("Should deploy with the correct parameters", async () => {
-		expect(await futureBuildToken.name()).to.equal(Constants.FutureBuildToken.Name);
-		expect(await futureBuildToken.symbol()).to.equal(Constants.FutureBuildToken.Symbol);
-		expect(await futureBuildToken.totalSupply()).to.equal(Constants.FutureBuildToken.TotalSupplyInUnits);
+		expect(await futureBuildToken.name()).to.equal(
+			Constants.FutureBuildToken.Name
+		);
+		expect(await futureBuildToken.symbol()).to.equal(
+			Constants.FutureBuildToken.Symbol
+		);
+		expect(await futureBuildToken.totalSupply()).to.equal(
+			Constants.FutureBuildToken.TotalSupplyInUnits
+		);
 	});
 
 	it("Should have correct number of decimals", async () => {
-		expect(await futureBuildToken.decimals()).to.equal(Constants.FutureBuildToken.Decimals);
+		expect(await futureBuildToken.decimals()).to.equal(
+			Constants.FutureBuildToken.Decimals
+		);
 	});
 });

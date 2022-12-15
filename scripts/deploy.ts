@@ -1,15 +1,24 @@
 import { ethers } from "hardhat";
-import { FutureBuildToken, FutureBuildToken__factory } from "../typechain-types";
+import {
+	FutureBuildToken,
+	FutureBuildToken__factory,
+} from "../typechain-types";
 import { Constants } from "./common/constants";
 
 // import * as hre from "hardhat";
 
 async function main() {
-	const futureBuildTokenContractFactory: FutureBuildToken__factory = await ethers.getContractFactory(Constants.ContractNames.FutureBuildToken) as FutureBuildToken__factory;
-	const futureBuildTokenContract: FutureBuildToken = await futureBuildTokenContractFactory.deploy() as FutureBuildToken;
+	const futureBuildTokenContractFactory: FutureBuildToken__factory =
+		(await ethers.getContractFactory(
+			Constants.ContractNames.FutureBuildToken
+		)) as FutureBuildToken__factory;
+	const futureBuildTokenContract: FutureBuildToken =
+		(await futureBuildTokenContractFactory.deploy()) as FutureBuildToken;
 	await futureBuildTokenContract.deployed();
 
-	console.log(`Deployed FutureBuildToken contract at ${futureBuildTokenContract.address} address.`);
+	console.log(
+		`Deployed FutureBuildToken contract at ${futureBuildTokenContract.address} address.`
+	);
 
 	// await hre.run("verify:verify", { address: futureBuildTokenContract.address });
 }

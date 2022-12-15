@@ -11,9 +11,9 @@ function hash(num1, num2) {
 }
 
 function memoized(func, serializer) {
-	let cache = new Map();
+	const cache = new Map();
 	const memo = (...numbers) => {
-		let hashedInput = serializer(...numbers);
+		const hashedInput = serializer(...numbers);
 
 		if (cache.get(hashedInput) === undefined) {
 			console.log("Cache miss.");
@@ -23,19 +23,17 @@ function memoized(func, serializer) {
 		}
 
 		return cache.get(hashedInput);
-
-	}
+	};
 
 	return memo;
 }
 
-
-let firstMemo = memoized(firstFunc, hash);
+const firstMemo = memoized(firstFunc, hash);
 console.log(firstMemo(1, 2));
 console.log(firstMemo(1, 2));
 console.log(firstMemo(2, 1));
 
-let secondMemo = memoized(secondFunc, hash);
+const secondMemo = memoized(secondFunc, hash);
 console.log(secondMemo(1, 2));
 console.log(secondMemo(1, 2));
 console.log(secondMemo(2, 1));
