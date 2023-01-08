@@ -4,6 +4,14 @@ import { Constants } from "../../scripts/common/constants";
 import { FutureBuildToken__factory } from "../../misc/typechain-types";
 import { FutureBuildToken } from "../../misc/typechain-types/contracts/FutureBuildToken";
 
+/**
+ * * Method name
+ * ! Alert
+ * ? Query
+ * TODO:
+ * @highlight
+ */
+
 describe("FutureBuildToken", () => {
 	// We define a fixture to reuse the same setup in every test.
 	// We use loadFixture to run this setup once, snapshot that state,
