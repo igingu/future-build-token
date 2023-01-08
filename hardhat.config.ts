@@ -3,6 +3,8 @@ import "@nomicfoundation/hardhat-toolbox";
 
 import "hardhat-abi-exporter";
 import "hardhat-gas-reporter";
+import "solidity-coverage";
+
 
 import * as dotenv from "dotenv";
 dotenv.config();

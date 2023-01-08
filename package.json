@@ -1,34 +1,36 @@
 {
-  "name": "future-build-token",
-  "version": "1.0.0",
-  "description": "Personal project to learn Solidity",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/palmtreey/future-build-token.git"
-  },
-  "author": "Ionut-Viorel Gingu",
-  "license": "NO LICENSE",
-  "bugs": {
-    "url": "https://github.com/palmtreey/future-build-token/issues"
-  },
-  "homepage": "https://github.com/palmtreey/future-build-token#readme",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.46.1",
-    "@typescript-eslint/parser": "^5.46.1",
-    "eslint": "^8.29.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "hardhat": "^2.12.2",
-    "hardhat-abi-exporter": "^2.10.1",
-    "hardhat-gas-reporter": "^1.0.9"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts": "^4.8.0",
-    "dotenv": "^16.0.3"
-  }
+	"name": "future-build-token",
+	"version": "1.0.0",
+	"description": "Personal project to learn Solidity",
+	"main": "index.js",
+	"scripts": {
+		"test": "npx hardhat test --network hardhat",
+		"coverage": "npx hardhat coverage"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/palmtreey/future-build-token.git"
+	},
+	"author": "Ionut-Viorel Gingu",
+	"license": "NO LICENSE",
+	"bugs": {
+		"url": "https://github.com/palmtreey/future-build-token/issues"
+	},
+	"homepage": "https://github.com/palmtreey/future-build-token#readme",
+	"devDependencies": {
+		"@nomicfoundation/hardhat-toolbox": "^2.0.0",
+		"@typescript-eslint/eslint-plugin": "^5.46.1",
+		"@typescript-eslint/parser": "^5.46.1",
+		"eslint": "^8.29.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"hardhat": "^2.12.2",
+		"hardhat-abi-exporter": "^2.10.1",
+		"hardhat-gas-reporter": "^1.0.9"
+	},
+	"dependencies": {
+		"@openzeppelin/contracts": "^4.8.0",
+		"dotenv": "^16.0.3",
+		"solidity-coverage": "^0.8.2"
+	}
 }

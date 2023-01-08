@@ -7,193 +7,189 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import {IStaking} from "./IStaking.sol";
 
 contract DynamicStaking is IStaking, Ownable {
-    IERC20 public immutable stakingToken;
-    IERC20 public immutable rewardsToken;
+  IERC20 public immutable stakingToken;
+  IERC20 public immutable rewardsToken;
 
-    uint64 public startTime;
-    uint64 public endTime;
+  uint64 public startTime;
+  uint64 public endTime;
 
-    uint256 public totalAmountStaked;
-    mapping(address => uint256) public amountStakedBy;
+  uint256 public totalAmountStaked;
+  mapping(address => uint256) public amountStakedBy;
 
-    uint256 public rewardRate;
+  uint256 public rewardRate;
 
-    uint256 public currentRewardPerToken;
-    uint256 public rewardsLastUpdatedAt;
+  uint256 public currentRewardPerToken;
+  uint256 public rewardsLastUpdatedAt;
 
-    mapping(address => uint256) public rewardToClaim;
-    mapping(address => uint256) public rewardsPerTokenPaid;
+  mapping(address => uint256) public rewardToClaim;
+  mapping(address => uint256) public rewardsPerTokenPaid;
 
-    string
-        private constant CLAIM_AMOUNT_CAN_NOT_BE_MORE_THAN_AVAILABLE_REWARDS =
-        "1";
-    string private constant START_TIME_NOT_SMALLER_OR_EQUAL_TO_END_TIME = "2";
-    string private constant STAKING_NOT_STARTED_YET = "3";
-    string private constant STAKING_ENDED = "4";
-    string private constant UNSTAKE_AMOUNT_BIGGER_THAN_STAKED_AMOUNT = "5";
-    string private constant TOKEN_TRANSFER_FAILED = "6";
-    string private constant REWARD_RATE_IS_ZERO = "7";
-    string private constant AMOUNT_CAN_NOT_BE_ZERO = "8";
-    string private constant TOKEN_TRANSFER_FROM_FAILED = "9";
+  string private constant CLAIM_AMOUNT_CAN_NOT_BE_MORE_THAN_AVAILABLE_REWARDS =
+    "1";
+  string private constant START_TIME_NOT_SMALLER_OR_EQUAL_TO_END_TIME = "2";
+  string private constant STAKING_NOT_STARTED_YET = "3";
+  string private constant STAKING_ENDED = "4";
+  string private constant UNSTAKE_AMOUNT_BIGGER_THAN_STAKED_AMOUNT = "5";
+  string private constant TOKEN_TRANSFER_FAILED = "6";
+  string private constant REWARD_RATE_IS_ZERO = "7";
+  string private constant AMOUNT_CAN_NOT_BE_ZERO = "8";
+  string private constant TOKEN_TRANSFER_FROM_FAILED = "9";
 
-    event Unstaked(address indexed user, uint256 amount);
-    event Staked(address indexed user, uint256 amount);
-    event Claimed(address indexed user, uint256 amount);
+  event Unstaked(address indexed user, uint256 amount);
+  event Staked(address indexed user, uint256 amount);
+  event Claimed(address indexed user, uint256 amount);
 
-    modifier stakingStarted() {
-        require(block.timestamp >= startTime, STAKING_NOT_STARTED_YET);
-        _;
+  modifier stakingStarted() {
+    require(block.timestamp >= startTime, STAKING_NOT_STARTED_YET);
+    _;
+  }
+
+  modifier stakingNotFinished() {
+    require(block.timestamp <= endTime, STAKING_ENDED);
+    _;
+  }
+
+  modifier updateReward(address account) {
+    currentRewardPerToken = updateRewardPerToken();
+    rewardsLastUpdatedAt = lastTimeRewardApplies();
+
+    if (account != address(0)) {
+      rewardToClaim[account] = currentRewardRemaining(account);
+      rewardsPerTokenPaid[account] = currentRewardPerToken;
     }
 
-    modifier stakingNotFinished() {
-        require(block.timestamp <= endTime, STAKING_ENDED);
-        _;
+    _;
+  }
+
+  constructor(
+    uint64 startTime_,
+    uint64 endTime_,
+    uint256 rewardRate_,
+    address stakingToken_,
+    address rewardsToken_
+  ) {
+    require(endTime_ > startTime_, START_TIME_NOT_SMALLER_OR_EQUAL_TO_END_TIME);
+    require(rewardRate_ > 0, REWARD_RATE_IS_ZERO);
+
+    startTime = startTime_;
+    endTime = endTime_;
+
+    rewardRate = rewardRate_;
+
+    stakingToken = IERC20(stakingToken_);
+    rewardsToken = IERC20(rewardsToken_);
+  }
+
+  function stake(uint256 amount)
+    external
+    override
+    stakingStarted
+    stakingNotFinished
+    updateReward(_msgSender())
+  {
+    require(amount > 0, AMOUNT_CAN_NOT_BE_ZERO);
+
+    unchecked {
+      // totalAmountStaked can be at most the token supply, so it can not be more than uint256
+      totalAmountStaked += amount;
+
+      // amountStakedBy[account] can be at most the token supply, so it can not be more than uint256
+      amountStakedBy[_msgSender()] += amount;
     }
 
-    modifier updateReward(address account) {
-        currentRewardPerToken = updateRewardPerToken();
-        rewardsLastUpdatedAt = lastTimeRewardApplies();
+    bool success = stakingToken.transferFrom(
+      _msgSender(),
+      address(this),
+      amount
+    );
+    require(success, TOKEN_TRANSFER_FROM_FAILED);
 
-        if (account != address(0)) {
-            rewardToClaim[account] = currentRewardRemaining(account);
-            rewardsPerTokenPaid[account] = currentRewardPerToken;
-        }
+    emit Staked(_msgSender(), amount);
+  }
 
-        _;
+  function unstake(uint256 amount)
+    external
+    override
+    stakingStarted
+    updateReward(_msgSender())
+  {
+    require(
+      amount > amountStakedBy[_msgSender()],
+      UNSTAKE_AMOUNT_BIGGER_THAN_STAKED_AMOUNT
+    );
+
+    unchecked {
+      // totalAmountStaked should always be more than amount
+      totalAmountStaked -= amount;
+
+      // checked with require
+      amountStakedBy[_msgSender()] -= amount;
     }
 
-    constructor(
-        uint64 startTime_,
-        uint64 endTime_,
-        uint256 rewardRate_,
-        address stakingToken_,
-        address rewardsToken_
-    ) {
-        require(
-            endTime_ > startTime_,
-            START_TIME_NOT_SMALLER_OR_EQUAL_TO_END_TIME
-        );
-        require(rewardRate_ > 0, REWARD_RATE_IS_ZERO);
+    bool success = stakingToken.transfer(_msgSender(), amount);
+    require(success, TOKEN_TRANSFER_FAILED);
 
-        startTime = startTime_;
-        endTime = endTime_;
+    emit Unstaked(_msgSender(), amount);
+  }
 
-        rewardRate = rewardRate_;
+  function claim(uint256 amount)
+    external
+    override
+    stakingStarted
+    updateReward(_msgSender())
+  {
+    require(
+      amount > rewardToClaim[_msgSender()],
+      CLAIM_AMOUNT_CAN_NOT_BE_MORE_THAN_AVAILABLE_REWARDS
+    );
 
-        stakingToken = IERC20(stakingToken_);
-        rewardsToken = IERC20(rewardsToken_);
+    unchecked {
+      // checked with require
+      rewardToClaim[_msgSender()] -= amount;
     }
 
-    function stake(uint256 amount)
-        external
-        override
-        stakingStarted
-        stakingNotFinished
-        updateReward(_msgSender())
-    {
-        require(amount > 0, AMOUNT_CAN_NOT_BE_ZERO);
+    bool success = rewardsToken.transfer(_msgSender(), amount);
+    require(success, TOKEN_TRANSFER_FAILED);
 
-        unchecked {
-            // totalAmountStaked can be at most the token supply, so it can not be more than uint256
-            totalAmountStaked += amount;
+    emit Claimed(_msgSender(), amount);
+  }
 
-            // amountStakedBy[account] can be at most the token supply, so it can not be more than uint256
-            amountStakedBy[_msgSender()] += amount;
-        }
-
-        bool success = stakingToken.transferFrom(
-            _msgSender(),
-            address(this),
-            amount
-        );
-        require(success, TOKEN_TRANSFER_FROM_FAILED);
-
-        emit Staked(_msgSender(), amount);
+  function updateRewardPerToken() public view returns (uint256) {
+    if (totalAmountStaked == 0) {
+      return currentRewardPerToken;
     }
 
-    function unstake(uint256 amount)
-        external
-        override
-        stakingStarted
-        updateReward(_msgSender())
-    {
-        require(
-            amount > amountStakedBy[_msgSender()],
-            UNSTAKE_AMOUNT_BIGGER_THAN_STAKED_AMOUNT
-        );
+    // New reward per token is
+    // currentRewardPerToken + the rate of rewards per token staked (rewardRate / totalAmountStaked) *
+    // how much time has passed since last reward (lastTimeRewardApplies() - rewardsLastUpdatedAt)
+    return
+      currentRewardPerToken +
+      (rewardRate * (lastTimeRewardApplies() - rewardsLastUpdatedAt)) /
+      totalAmountStaked;
+  }
 
-        unchecked {
-            // totalAmountStaked should always be more than amount
-            totalAmountStaked -= amount;
+  function lastTimeRewardApplies() public view returns (uint256) {
+    return _min(endTime, block.timestamp);
+  }
 
-            // checked with require
-            amountStakedBy[_msgSender()] -= amount;
-        }
+  function currentRewardRemaining(address account)
+    public
+    view
+    returns (uint256)
+  {
+    // New amount of rewards user has is
+    // current reward (rewardToClaim[account]) +
+    // how much they have staked * (the current reward per token without the already paid reward per token)
+    // amountStakedBy[account] * (currentRewardPerToken - rewardsPerTokenPaid[account])
+    return
+      rewardToClaim[account] +
+      amountStakedBy[account] *
+      (currentRewardPerToken - rewardsPerTokenPaid[account]);
+  }
 
-        bool success = stakingToken.transfer(_msgSender(), amount);
-        require(success, TOKEN_TRANSFER_FAILED);
-
-        emit Unstaked(_msgSender(), amount);
-    }
-
-    function claim(uint256 amount)
-        external
-        override
-        stakingStarted
-        updateReward(_msgSender())
-    {
-        require(
-            amount > rewardToClaim[_msgSender()],
-            CLAIM_AMOUNT_CAN_NOT_BE_MORE_THAN_AVAILABLE_REWARDS
-        );
-
-        unchecked {
-            // checked with require
-            rewardToClaim[_msgSender()] -= amount;
-        }
-
-        bool success = rewardsToken.transfer(_msgSender(), amount);
-        require(success, TOKEN_TRANSFER_FAILED);
-
-        emit Claimed(_msgSender(), amount);
-    }
-
-    function updateRewardPerToken() public view returns (uint256) {
-        if (totalAmountStaked == 0) {
-            return currentRewardPerToken;
-        }
-
-        // New reward per token is
-        // currentRewardPerToken + the rate of rewards per token staked (rewardRate / totalAmountStaked) *
-        // how much time has passed since last reward (lastTimeRewardApplies() - rewardsLastUpdatedAt)
-        return
-            currentRewardPerToken +
-            (rewardRate * (lastTimeRewardApplies() - rewardsLastUpdatedAt)) /
-            totalAmountStaked;
-    }
-
-    function lastTimeRewardApplies() public view returns (uint256) {
-        return _min(endTime, block.timestamp);
-    }
-
-    function currentRewardRemaining(address account)
-        public
-        view
-        returns (uint256)
-    {
-        // New amount of rewards user has is
-        // current reward (rewardToClaim[account]) +
-        // how much they have staked * (the current reward per token without the already paid reward per token)
-        // amountStakedBy[account] * (currentRewardPerToken - rewardsPerTokenPaid[account])
-        return
-            rewardToClaim[account] +
-            amountStakedBy[account] *
-            (currentRewardPerToken - rewardsPerTokenPaid[account]);
-    }
-
-    function _min(uint256 frst, uint256 scnd) private pure returns (uint256) {
-        return frst > scnd ? scnd : frst;
-    }
+  function _min(uint256 frst, uint256 scnd) private pure returns (uint256) {
+    return frst > scnd ? scnd : frst;
+  }
 }
 
 // contract StakingRewards {
